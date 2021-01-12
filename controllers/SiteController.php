@@ -55,6 +55,16 @@ class SiteController extends Controller
     }
 
     /**
+     * Saluda al usuario.
+     *
+     * @return string
+     */
+    public function actionHola()
+    {
+        return "Hola";
+    }
+
+    /**
      * Displays homepage.
      *
      * @return string
