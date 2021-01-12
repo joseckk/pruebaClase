@@ -59,9 +59,11 @@ class SiteController extends Controller
      *
      * @return string
      */
-    public function actionHola()
+    public function actionHola($nombre)
     {
-        return "Hola";
+        return $this->render('hola', [
+            'nombre' => $nombre,
+        ]);
     }
 
     /**
