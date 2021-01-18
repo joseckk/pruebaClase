@@ -19,7 +19,7 @@ class LibrosForm extends Model
 
     public $titulo;
     public $autor;
-
+    
     public function rules()
     {
         return [
