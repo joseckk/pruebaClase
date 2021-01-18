@@ -12,7 +12,9 @@ class LibrosController extends Controller
     {
         $librosForm = new LibrosForm();
 
-        Yii::debug(Yii::$app->request->post());
+        if ($librosForm->load(Yii::$app->request->post()) && $librosForm->validate()) {
+            return $this->redirect(['site/index']);
+        }
 
         return $this->render('create', [
             'librosForm' => $librosForm,
