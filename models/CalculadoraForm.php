@@ -14,6 +14,8 @@ class CalculadoraForm extends Model
     {
         return [
             [['op1', 'op2', 'op'], 'required'],
+            [['op1', 'op2'], 'number'],
+            [['op'], 'in', 'range' => ['+', '-', '*', '/']],
         ];
     }
 

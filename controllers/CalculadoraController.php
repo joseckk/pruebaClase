@@ -11,21 +11,57 @@ class CalculadoraController extends Controller
     public function actionCalcular()
     {
         $calculadoraForm = new CalculadoraForm();
+        $lista = [
+            '+' => '+',
+            '-' => '-',
+            '*' => '*',
+            '/' => '/',
+        ];
         $resultado = null;
 
-        if ($calculadoraForm->load(Yii::$app->request->post())
+        if ($calculadoraForm->load(Yii::$app->request->queryParams)
             && $calculadoraForm->validate()) {
-            // calcular:
-            switch ($calculadoraForm->op) {
-                case '+':
-                    $resultado = $calculadoraForm->op1 + $calculadoraForm->op2;
-                    break;
-            }
+            $resultado = $this->_calcular(
+                $calculadoraForm->op1,
+                $calculadoraForm->op2,
+                $calculadoraForm->op
+            );
+            return $this->redirect([
+                'calculadora/solucion',
+                'resultado' => $resultado,
+            ]);
         }
 
-        $this->render('calcular', [
+        return $this->render('calcular', [
             'calculadoraForm' => $calculadoraForm,
             'resultado' => $resultado,
+            'lista' => $lista,
         ]);
+    }
+
+    public function actionSolucion($resultado)
+    {
+        return $this->render('solucion', [
+            'resultado' => $resultado,
+        ]);
+    }
+
+    private function _calcular($op1, $op2, $op)
+    {
+        switch ($op) {
+            case '+':
+                $resultado = $op1 + $op2;
+                break;
+            case '-':
+                $resultado = $op1 - $op2;
+                break;
+            case '*':
+                $resultado = $op1 * $op2;
+                break;
+            case '/':
+                $resultado = $op1 / $op2;
+                break;
+        }
+        return $resultado;
     }
 }
