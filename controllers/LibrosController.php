@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\models\LibrosForm;
+use app\models\LibrosSearch;
 use Yii;
 use yii\db\Query;
 use yii\web\Controller;
@@ -34,10 +35,18 @@ class LibrosController extends Controller
 
     public function actionIndex()
     {
-        $libros = (new Query())->from('libros')->all();
+        $librosSearch = new LibrosSearch();
+        $libros = (new Query())->from('libros');
+
+        if ($librosSearch->load(Yii::$app->request->queryParams)
+            && $librosSearch->validate()) {
+            $libros->filterWhere(['isbn' => $librosSearch->isbn]);
+            $libros->andFilterWhere(['like', 'titulo', $librosSearch->titulo]);
+        }
 
         return $this->render('index', [
-            'libros' => $libros,
+            'libros' => $libros->all(),
+            'librosSearch' => $librosSearch,
         ]);
     }
 }
