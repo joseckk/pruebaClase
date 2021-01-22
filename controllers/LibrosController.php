@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\models\LibrosForm;
 use Yii;
+use yii\db\Query;
 use yii\web\Controller;
 
 class LibrosController extends Controller
@@ -18,6 +19,25 @@ class LibrosController extends Controller
 
         return $this->render('create', [
             'librosForm' => $librosForm,
+        ]);
+    }
+
+    /*
+    CRUD:
+
+       - index: visualizar todas las filas de la tabla
+       - create: dar de alta
+       - update: modificar
+       - delete: borrar
+       - view:   ver una fila
+    */
+
+    public function actionIndex()
+    {
+        $libros = (new Query())->from('libros')->all();
+
+        return $this->render('index', [
+            'libros' => $libros,
         ]);
     }
 }

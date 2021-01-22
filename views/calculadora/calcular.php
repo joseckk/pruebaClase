@@ -32,20 +32,13 @@ $this->params['breadcrumbs'][] = $this->title;
     ]) ?>
 <?php endif ?>
 
-
-
-
-
-
-
+<!--
     Active Record (Mapeado Objeto-Relacional)
 --------------------
-    Query Builder
+    Query Builder                all()   one()   column()   scalar()
 --------------------
-     DAO (Data Access Objects)
+     DAO (Data Access Objects)   queryAll()  queryOne()   queryColumn() 
+                                 queryScalar()
 --------------------
-     PDO (PHP)
-
-
-
-
+     PDO (PHP)       fetchAll()   fetchOne()   fetchColumn()
+-->
