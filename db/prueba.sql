@@ -15,4 +15,15 @@ CREATE TABLE libros
 
 INSERT INTO libros (isbn, titulo, anyo)
 VALUES ('123123123', 'Cómo aprender PHP', 2020)
-     , ('321321321', 'Cómo olvidar PHP', 2017);
+     , ('121321321', 'Cómo olvidar PHP', 2017)
+     , ('221321321', 'Cómo olvidar PHP', 2017)
+     , ('421321321', 'Cómo olvidar PHP', 2017)
+     , ('521321321', 'Cómo olvidar PHP', 2017)
+     , ('621321321', 'Cómo olvidar PHP', 2017)
+     , ('721321321', 'Cómo olvidar PHP', 2017)
+     , ('821321321', 'Cómo olvidar PHP', 2017)
+     , ('921321321', 'Cómo olvidar PHP', 2017)
+     , ('331321321', 'Cómo olvidar PHP', 2017)
+     , ('341321321', 'Cómo olvidar PHP', 2017)
+     , ('351321321', 'Cómo olvidar PHP', 2017)
+     , ('361321321', 'Cómo olvidar PHP', 2017);
