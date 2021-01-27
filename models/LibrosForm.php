@@ -46,13 +46,4 @@ class LibrosForm extends Model
             $this->_isbn = $isbn;
         }
     }
-
-    public function getDb()
-    {
-        if ($this->_db === null) {
-            $this->_db = new \DateTime();
-        }
-
-        return $this->_db;
-    }
 }

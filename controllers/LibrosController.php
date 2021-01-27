@@ -6,6 +6,7 @@ use app\models\LibrosForm;
 use app\models\LibrosSearch;
 use Yii;
 use yii\data\Pagination;
+use yii\data\Sort;
 use yii\db\Query;
 use yii\web\Controller;
 
@@ -37,7 +38,11 @@ class LibrosController extends Controller
     public function actionIndex()
     {
         $librosSearch = new LibrosSearch();
-        $libros = (new Query())->from('libros');
+
+        $libros = (new Query())
+            ->select('libros.*, nombre')
+            ->from('libros')
+            ->leftJoin('autores', 'libros.autores_id = autores.id');
         
         if ($librosSearch->load(Yii::$app->request->queryParams)
             && $librosSearch->validate()) {
@@ -50,12 +55,36 @@ class LibrosController extends Controller
             'totalCount' => $libros->count(),
         ]);
 
+        $sort = new Sort([
+            'attributes' => [
+                'isbn' => [
+                    'asc' => ['isbn' => SORT_ASC],
+                    'desc' => ['isbn' => SORT_DESC],
+                    'default' => SORT_ASC,
+                    'label' => 'ISBN',
+                ],
+                'titulo' => [
+                    'label' => 'Título',
+                ],
+                'anyo' => [
+                    'label' => 'Año',
+                ],
+                'nombre' => [
+                    'asc' => ['nombre' => SORT_ASC],
+                    'desc' => ['nombre' => SORT_DESC],
+                    'label' => 'Autor',
+                ],
+            ],
+        ]);
+
         $libros->limit($pagination->limit)->offset($pagination->offset);
+        $libros->orderBy($sort->orders);
 
         return $this->render('index', [
             'libros' => $libros->all(),
             'librosSearch' => $librosSearch,
             'pagination' => $pagination,
+            'sort' => $sort,
         ]);
     }
 }

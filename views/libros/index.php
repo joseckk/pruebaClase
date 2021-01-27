@@ -22,15 +22,22 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <table class="table">
     <thead>
-        <th>ISBN</th>
-        <th>Título</th>
-        <th>Año</th>
+        <th><?= $sort->link('isbn') ?></th>
+        <th><?= $sort->link('titulo') ?></th>
+        <th><?= $sort->link('nombre') ?></th>
+        <th><?= $sort->link('anyo') ?></th>
     </thead>
     <tbody>
         <?php foreach ($libros as $libro): ?>
             <tr>
                 <td><?= Html::encode($libro['isbn']) ?></td>
                 <td><?= Html::encode($libro['titulo']) ?></td>
+                <td>
+                    <?= Html::a(Html::encode($libro['nombre']), [
+                        'autores/view',
+                        'id' => $libro['autores_id'],
+                    ]) ?>
+                </td>
                 <td><?= Html::encode($libro['anyo']) ?></td>
             </tr>
         <?php endforeach ?>
