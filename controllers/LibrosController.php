@@ -4,9 +4,8 @@ namespace app\controllers;
 
 use app\models\LibrosForm;
 use app\models\LibrosSearch;
+use yii\data\ActiveDataProvider;
 use Yii;
-use yii\data\Pagination;
-use yii\data\Sort;
 use yii\db\Query;
 use yii\web\Controller;
 
@@ -38,53 +37,50 @@ class LibrosController extends Controller
     public function actionIndex()
     {
         $librosSearch = new LibrosSearch();
-
-        $libros = (new Query())
-            ->select('libros.*, nombre')
-            ->from('libros')
-            ->leftJoin('autores', 'libros.autores_id = autores.id');
         
+        $libros = (new Query())
+                    ->select('libros.*, nombre')
+                    ->from('libros')
+                    ->leftJoin('autores', 'libros.autores_id = autores.id');
+
         if ($librosSearch->load(Yii::$app->request->queryParams)
-            && $librosSearch->validate()) {
+        && $librosSearch->validate()) {
             $libros->filterWhere(['isbn' => $librosSearch->isbn]);
             $libros->andFilterWhere(['like', 'titulo', $librosSearch->titulo]);
         }
-        
-        $pagination = new Pagination([
-            'pageSize' => 5,
-            'totalCount' => $libros->count(),
-        ]);
 
-        $sort = new Sort([
-            'attributes' => [
-                'isbn' => [
-                    'asc' => ['isbn' => SORT_ASC],
-                    'desc' => ['isbn' => SORT_DESC],
-                    'default' => SORT_ASC,
-                    'label' => 'ISBN',
-                ],
-                'titulo' => [
-                    'label' => 'Título',
-                ],
-                'anyo' => [
-                    'label' => 'Año',
-                ],
-                'nombre' => [
-                    'asc' => ['nombre' => SORT_ASC],
-                    'desc' => ['nombre' => SORT_DESC],
-                    'label' => 'Autor',
-                ],
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $libros,
+            'pagination' => [
+                'pageSize' => 5,
             ],
+            'sort' => [
+                'attributes' => [
+                    'isbn' => [
+                        'asc' => ['isbn' => SORT_ASC],
+                        'desc' => ['isbn' => SORT_DESC],
+                        'default' => SORT_ASC,
+                        'label' => 'ISBN',
+                    ],
+                    'titulo' => [
+                        'label' => 'Título',
+                    ],
+                    'anyo' => [
+                        'label' => 'Año',
+                    ],
+                    'nombre' => [
+                        'asc' => ['nombre' => SORT_ASC],
+                        'desc' => ['nombre' => SORT_DESC],
+                        'label' => 'Autor',
+                    ],
+                ],
+            ]
         ]);
-
-        $libros->limit($pagination->limit)->offset($pagination->offset);
-        $libros->orderBy($sort->orders);
 
         return $this->render('index', [
-            'libros' => $libros->all(),
+            'dataProvider' => $dataProvider,
             'librosSearch' => $librosSearch,
-            'pagination' => $pagination,
-            'sort' => $sort,
         ]);
     }
 }

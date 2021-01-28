@@ -4,9 +4,8 @@ namespace app\controllers;
 
 use app\models\AutoresForm;
 use yii\data\ActiveDataProvider;
-use yii\data\Pagination;
-use yii\data\Sort;
 use yii\db\Query;
+use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
@@ -62,34 +61,36 @@ class AutoresController extends Controller
     public function actionView($id)
     {
         $autor = $this->findAutor($id);
-        $libros = (new Query())
-            ->from('libros')
-            ->where(['autores_id' => $id]);
-    
-        $sort = new Sort([
-            'attributes' => [
-                'isbn' => [
-                    'asc' => ['isbn' => SORT_ASC],
-                    'desc' => ['isbn' => SORT_DESC],
-                    'default' => SORT_ASC,
-                    'label' => 'ISBN',
-                ],
-                'titulo' => [
-                    'label' => 'Título',
-                ],
-                'anyo' => [
-                    'label' => 'Año',
-                ],
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => (new Query())
+                            ->from('libros')
+                            ->where(['autores_id' => $id]),
+            'pagination' => [
+                'pageSize' => 5,
             ],
+            'sort' => [
+                'attributes' => [
+                    'isbn' => [
+                        'asc' => ['isbn' => SORT_ASC],
+                        'desc' => ['isbn' => SORT_DESC],
+                        'default' => SORT_ASC,
+                        'label' => 'ISBN',
+                    ],
+                    'titulo' => [
+                        'label' => 'Título',
+                    ],
+                    'anyo' => [
+                        'label' => 'Año',
+                    ],
+                ],
+            ]
         ]);
-    
-        $libros->orderBy($sort->orders);
         
 
         return $this->render('view', [
             'autor' => $autor,
-            'libros' => $libros,
-            'sort' => $sort,
+            'dataProvider' => $dataProvider,
         ]);
     }
 

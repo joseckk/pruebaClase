@@ -1,7 +1,6 @@
 <?php
 
-use yii\bootstrap4\ActiveForm;
-use yii\bootstrap4\LinkPager;
+use yii\grid\GridView;
 use yii\bootstrap4\Html;
 use yii\bootstrap4\Alert;
 
@@ -13,23 +12,15 @@ $this->params['breadcrumbs'][] = $this->title;
 <h3>Autor</h3>
 <p><?= Html::encode($autor['nombre']) ?></p>
 
-<?php if (count($libros->all()) !== 0): ?>
-    <table class="table">
-        <thead>
-            <th>ISBN</th>
-            <th>Título</th>
-            <th>Año</th>
-        </thead>
-        <tbody>
-            <?php foreach ($libros->each() as $libro): ?>
-                <tr>
-                    <td><?= Html::encode($libro['isbn']) ?></td>
-                    <td><?= Html::encode($libro['titulo']) ?></td>
-                    <td><?= Html::encode($libro['anyo']) ?></td>
-                </tr>
-            <?php endforeach ?>
-        </tbody>
-    </table>
+<?php if (count($dataProvider->getModels()) !== 0): ?>
+    <?= GridView::widget([
+        'dataProvider' => $dataProvider,
+        'columns' => [
+            'isbn',
+            'titulo',
+            'anyo',
+        ],
+    ]) ?>
 
 <?php else: ?>
     <?= Alert::widget([

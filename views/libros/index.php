@@ -2,7 +2,7 @@
 
 use yii\bootstrap4\ActiveForm;
 use yii\bootstrap4\Html;
-use yii\bootstrap4\LinkPager;
+use yii\grid\GridView;
 
 $this->title = 'Listado de libros';
 $this->params['breadcrumbs'][] = $this->title;
@@ -20,32 +20,21 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 <?php ActiveForm::end() ?>
 
-<table class="table">
-    <thead>
-        <th><?= $sort->link('isbn') ?></th>
-        <th><?= $sort->link('titulo') ?></th>
-        <th><?= $sort->link('nombre') ?></th>
-        <th><?= $sort->link('anyo') ?></th>
-    </thead>
-    <tbody>
-        <?php foreach ($libros as $libro): ?>
-            <tr>
-                <td><?= Html::encode($libro['isbn']) ?></td>
-                <td><?= Html::encode($libro['titulo']) ?></td>
-                <td>
-                    <?= Html::a(Html::encode($libro['nombre']), [
-                        'autores/view',
-                        'id' => $libro['autores_id'],
-                    ]) ?>
-                </td>
-                <td><?= Html::encode($libro['anyo']) ?></td>
-            </tr>
-        <?php endforeach ?>
-    </tbody>
-</table>
-
-<div>
-    <?= LinkPager::widget([
-        'pagination' => $pagination,
-    ]) ?>
-</div>
+<?= GridView::widget([
+    'dataProvider' => $dataProvider,
+    'columns' => [
+        'isbn',
+        'titulo',
+        'anyo',
+        [
+            'label' => 'Autor',
+            'value' => function ($model, $key, $index, $column) {
+                return  Html::a($model['nombre'], [
+                    'autores/view',
+                    'id' => $model['autores_id'],
+                ],);
+            },
+            'format' => 'html',
+        ],
+    ],
+]) ?>
