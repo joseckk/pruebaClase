@@ -2,7 +2,8 @@
 
 namespace app\controllers;
 
-use app\models\AutoresForm;
+use app\models\Autores;
+use app\models\Libros;
 use yii\data\ActiveDataProvider;
 use yii\db\Query;
 use Yii;
@@ -13,15 +14,15 @@ class AutoresController extends Controller
 {
     public function actionCreate()
     {
-        $autoresForm = new AutoresForm();
+        $autores = new Autores();
 
-        if ($autoresForm->load(Yii::$app->request->post()) 
-        && $autoresForm->validate()) {
+        if ($autores->load(Yii::$app->request->post()) 
+        && $autores->validate()) {
             return $this->redirect(['site/index']);
         }
 
         return $this->render('create', [
-            'autoresForm' => $autoresForm,
+            'autores' => $autores,
         ]);
     }
 
@@ -38,7 +39,7 @@ class AutoresController extends Controller
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => (new Query())->from('autores'),
+            'query' => Autores::find(),
             'pagination' => [
                 'pageSize' => 2,
             ],
@@ -96,12 +97,10 @@ class AutoresController extends Controller
 
     private function findAutor($id)
     {
-        $autor = (new Query())
-            ->from('autores')
-            ->where(['id' => $id])
-            ->one();
+        
+        $autor = Autores::findOne($id);
 
-        if ($autor === false) {
+        if ($autor === null) {
             throw new NotFoundHttpException('Ese autor no existe.');
         }
 
