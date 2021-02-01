@@ -4,12 +4,12 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\Libros;
+use app\models\Autores;
 
 /**
- * LibrosSearch represents the model behind the search form of `app\models\Libros`.
+ * AutoresSearch represents the model behind the search form of `app\models\Autores`.
  */
-class LibrosSearch extends Libros
+class AutoresSearch extends Autores
 {
     /**
      * {@inheritdoc}
@@ -17,9 +17,8 @@ class LibrosSearch extends Libros
     public function rules()
     {
         return [
-            [['id', 'autores_id'], 'integer'],
-            [['isbn', 'titulo'], 'safe'],
-            [['anyo'], 'number'],
+            [['id'], 'integer'],
+            [['nombre'], 'safe'],
         ];
     }
 
@@ -41,7 +40,7 @@ class LibrosSearch extends Libros
      */
     public function search($params)
     {
-        $query = Libros::find();
+        $query = Autores::find();
 
         // add conditions that should always apply here
 
@@ -60,12 +59,9 @@ class LibrosSearch extends Libros
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'anyo' => $this->anyo,
-            'autores_id' => $this->autores_id,
         ]);
 
-        $query->andFilterWhere(['ilike', 'isbn', $this->isbn])
-            ->andFilterWhere(['ilike', 'titulo', $this->titulo]);
+        $query->andFilterWhere(['ilike', 'nombre', $this->nombre]);
 
         return $dataProvider;
     }

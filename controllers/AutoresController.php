@@ -2,66 +2,60 @@
 
 namespace app\controllers;
 
+use Yii;
 use app\models\Autores;
 use app\models\Libros;
-use yii\data\ActiveDataProvider;
-use yii\db\Query;
-use Yii;
+use app\models\AutoresSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\filters\VerbFilter;
+use yii\data\ActiveDataProvider;
+use yii\db\Query;
 
+/**
+ * AutoresController implements the CRUD actions for Autores model.
+ */
 class AutoresController extends Controller
 {
-    public function actionCreate()
+    /**
+     * {@inheritdoc}
+     */
+    public function behaviors()
     {
-        $autores = new Autores();
-
-        if ($autores->load(Yii::$app->request->post()) 
-        && $autores->validate()) {
-            return $this->redirect(['site/index']);
-        }
-
-        return $this->render('create', [
-            'autores' => $autores,
-        ]);
+        return [
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['get'],
+                ],
+            ],
+        ];
     }
 
-    /*
-    CRUD:
-
-       - index: visualizar todas las filas de la tabla
-       - create: dar de alta
-       - update: modificar
-       - delete: borrar
-       - view:   ver una fila
-    */
-
+    /**
+     * Lists all Autores models.
+     * @return mixed
+     */
     public function actionIndex()
     {
-        $dataProvider = new ActiveDataProvider([
-            'query' => Autores::find(),
-            'pagination' => [
-                'pageSize' => 2,
-            ],
-            'sort' => [
-                'attributes' => [
-                    'nombre' => [
-                        'asc' => ['nombre' => SORT_ASC],
-                        'desc' => ['nombre' => SORT_DESC],
-                        'label' => 'Nombre',
-                    ],
-                ],
-            ]
-        ]);
+        $searchModel = new AutoresSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
+            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
     }
 
+    /**
+     * Displays a single Autores model.
+     * @param integer $id
+     * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
+     */
     public function actionView($id)
     {
-        $autor = $this->findAutor($id);
+        $autor = $this->findModel($id);
 
         $dataProvider = new ActiveDataProvider([
             'query' => (new Query())
@@ -95,15 +89,71 @@ class AutoresController extends Controller
         ]);
     }
 
-    private function findAutor($id)
+    /**
+     * Creates a new Autores model.
+     * If creation is successful, the browser will be redirected to the 'view' page.
+     * @return mixed
+     */
+    public function actionCreate()
     {
-        
-        $autor = Autores::findOne($id);
+        $model = new Autores();
 
-        if ($autor === null) {
-            throw new NotFoundHttpException('Ese autor no existe.');
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['view', 'id' => $model->id]);
         }
 
-        return $autor;
+        return $this->render('create', [
+            'model' => $model,
+        ]);
+    }
+
+    /**
+     * Updates an existing Autores model.
+     * If update is successful, the browser will be redirected to the 'view' page.
+     * @param integer $id
+     * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionUpdate($id)
+    {
+        $model = $this->findModel($id);
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['view', 'id' => $model->id]);
+        }
+
+        return $this->render('update', [
+            'model' => $model,
+        ]);
+    }
+
+    /**
+     * Deletes an existing Autores model.
+     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * @param integer $id
+     * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionDelete($id)
+    {
+        $this->findModel($id)->delete();
+
+        return $this->redirect(['index']);
+    }
+
+    /**
+     * Finds the Autores model based on its primary key value.
+     * If the model is not found, a 404 HTTP exception will be thrown.
+     * @param integer $id
+     * @return Autores the loaded model
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    protected function findModel($id)
+    {
+        if (($model = Autores::findOne($id)) !== null) {
+            return $model;
+        }
+
+        throw new NotFoundHttpException('Ese autor no existe.');
     }
 }

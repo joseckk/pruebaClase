@@ -2,53 +2,101 @@
 
 namespace app\controllers;
 
-use app\models\LibrosForm;
-use app\models\LibrosSearch;
-use yii\data\ActiveDataProvider;
 use Yii;
-use yii\db\Query;
+use app\models\Libros;
+use app\models\LibrosSearch;
 use yii\web\Controller;
+use yii\web\NotFoundHttpException;
+use yii\filters\VerbFilter;
+use yii\db\Query;
+use yii\data\ActiveDataProvider;
 
+/**
+ * LibrosController implements the CRUD actions for Libros model.
+ */
 class LibrosController extends Controller
 {
-    public function actionCreate()
+    /**
+     * {@inheritdoc}
+     */
+    public function behaviors()
     {
-        $librosForm = new LibrosForm();
+        return [
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
+            ],
+        ];
+    }
 
-        if ($librosForm->load(Yii::$app->request->post()) && $librosForm->validate()) {
-            return $this->redirect(['site/index']);
+    /**
+     * Lists all Libros models.
+     * @return mixed
+     */
+    public function actionIndex()
+    {
+        $searchModel = new LibrosSearch();
+
+        $libros = (new Query())
+            ->select('libros.*, nombre')
+            ->from('libros')
+            ->leftJoin('autores', 'libros.autores_id = autores.id');
+
+        if ($searchModel->load(Yii::$app->request->queryParams)
+        && $searchModel->validate()) {
+            $libros->filterWhere(['isbn' => $searchModel->isbn]);
+            $libros->andFilterWhere(['like', 'titulo', $searchModel->titulo]);
+            $libros->andFilterWhere(['anyo' => $searchModel->anyo]);
         }
 
-        return $this->render('create', [
-            'librosForm' => $librosForm,
+        $dataProvider = new ActiveDataProvider([
+            'query' => $libros,
+            'pagination' => [
+                'pageSize' => 5,
+            ],
+            'sort' => [
+                'attributes' => [
+                    'isbn' => [
+                        'asc' => ['isbn' => SORT_ASC],
+                        'desc' => ['isbn' => SORT_DESC],
+                        'default' => SORT_ASC,
+                        'label' => 'ISBN',
+                    ],
+                    'titulo' => [
+                        'label' => 'Título',
+                    ],
+                    'anyo' => [
+                        'label' => 'Año',
+                    ],
+                    'nombre' => [
+                        'label' => 'Autor',
+                    ],
+                ],
+            ]
+        ]);
+
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
-    /*
-    CRUD:
-
-       - index: visualizar todas las filas de la tabla
-       - create: dar de alta
-       - update: modificar
-       - delete: borrar
-       - view:   ver una fila
-    */
-
-    public function actionIndex()
+    /**
+     * Displays a single Libros model.
+     * @param integer $id
+     * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionView($id)
     {
-        $librosSearch = new LibrosSearch();
-        
         $libros = (new Query())
-                    ->select('libros.*, nombre')
-                    ->from('libros')
-                    ->leftJoin('autores', 'libros.autores_id = autores.id');
+            ->select('libros.*, nombre')
+            ->from('libros')
+            ->leftJoin('autores', 'libros.autores_id = autores.id');
 
-        if ($librosSearch->load(Yii::$app->request->queryParams)
-        && $librosSearch->validate()) {
-            $libros->filterWhere(['isbn' => $librosSearch->isbn]);
-            $libros->andFilterWhere(['like', 'titulo', $librosSearch->titulo]);
-        }
-
+        $libros->filterWhere(['libros.id' => $id]);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $libros,
@@ -78,9 +126,78 @@ class LibrosController extends Controller
             ]
         ]);
 
-        return $this->render('index', [
-            'dataProvider' => $dataProvider,
-            'librosSearch' => $librosSearch,
+        $model = $dataProvider->getModels();
+        Yii::debug($model);
+        return $this->render('view', [
+            'model' => $this->findModel($id),
         ]);
+    }
+
+    /**
+     * Creates a new Libros model.
+     * If creation is successful, the browser will be redirected to the 'view' page.
+     * @return mixed
+     */
+    public function actionCreate()
+    {
+        $model = new Libros();
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['view', 'id' => $model->id]);
+        }
+
+        return $this->render('create', [
+            'model' => $model,
+        ]);
+    }
+
+    /**
+     * Updates an existing Libros model.
+     * If update is successful, the browser will be redirected to the 'view' page.
+     * @param integer $id
+     * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionUpdate($id)
+    {
+        $model = $this->findModel($id);
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['view', 'id' => $model->id]);
+        }
+
+        return $this->render('update', [
+            'model' => $model,
+        ]);
+    }
+
+    /**
+     * Deletes an existing Libros model.
+     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * @param integer $id
+     * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionDelete($id)
+    {
+        $this->findModel($id)->delete();
+
+        return $this->redirect(['index']);
+    }
+
+    /**
+     * Finds the Libros model based on its primary key value.
+     * If the model is not found, a 404 HTTP exception will be thrown.
+     * @param integer $id
+     * @return Libros the loaded model
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    protected function findModel($id)
+    {
+        if (($model = Libros::findOne($id)) !== null) {
+            return $model;
+        }
+
+        throw new NotFoundHttpException('The requested page does not exist.');
     }
 }

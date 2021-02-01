@@ -1,40 +1,54 @@
 <?php
 
-use yii\bootstrap4\ActiveForm;
 use yii\bootstrap4\Html;
 use yii\grid\GridView;
+use yii\helpers\Url;
 
-$this->title = 'Listado de libros';
+/* @var $this yii\web\View */
+/* @var $searchModel app\models\LibrosSearch */
+/* @var $dataProvider yii\data\ActiveDataProvider */
+
+$this->title = 'Libros';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+<div class="libros-index">
 
-<?php $form = ActiveForm::begin([
-    'method' => 'get',
-    'action' => ['libros/index'],
-]) ?>
-    <?= $form->field($librosSearch, 'isbn') ?>
-    <?= $form->field($librosSearch, 'titulo') ?>
+    <h1><?= Html::encode($this->title) ?></h1>
 
-    <div class="form-group">
-        <?= Html::submitButton('Buscar', ['class' => 'btn btn-primary']) ?>
-    </div>
-<?php ActiveForm::end() ?>
+    <p>
+        <?= Html::a('Añadir Libro', ['create'], ['class' => 'btn btn-success']) ?>
+    </p>
 
-<?= GridView::widget([
-    'dataProvider' => $dataProvider,
-    'columns' => [
-        'isbn',
-        'titulo',
-        'anyo',
-        [
-            'label' => 'Autor',
-            'value' => function ($model, $key, $index, $column) {
-                return  Html::a($model['nombre'], [
-                    'autores/view',
-                    'id' => $model['autores_id'],
-                ],);
-            },
-            'format' => 'html',
+    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+
+    <?= GridView::widget([
+        'dataProvider' => $dataProvider,
+        'filterModel' => $searchModel,
+        'columns' => [
+            'isbn',
+            'titulo',
+            'anyo',
+            'nombre',
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'template' => '{view}{update}{delete}',
+                'buttons' => [
+                    'view' => function ($url, $model, $key) {
+                        return Html::a('<span class="glyphicon glyphicon-eye-open"></span> ', 
+                        Url::to(['libros/view', 'id' => $model['id']]));
+                    },
+                    'update' => function ($url, $model, $key) {
+                        return Html::a('<span class="glyphicon glyphicon-pencil"></span> ', 
+                        Url::to(['libros/update', 'id' => $model['id']]));
+                    },
+                    'delete' => function ($url, $model, $key) {
+                        return Html::a('<span class="glyphicon glyphicon-trash"></span>', 
+                        Url::to(['libros/delete', 'id' => $model['id']]));
+                    },
+                ],
+            ],
         ],
-    ],
-]) ?>
+    ]); ?>
+
+
+</div>

@@ -3,13 +3,13 @@
 use yii\bootstrap4\Html;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\Libros */
+/* @var $model app\models\Autores */
 
-$this->title = 'Añadir Libro';
-$this->params['breadcrumbs'][] = ['label' => 'Libros', 'url' => ['index']];
+$this->title = 'Añadir Autor';
+$this->params['breadcrumbs'][] = ['label' => 'Autores', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="libros-create">
+<div class="autores-create">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
